@@ -1,36 +1,103 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# LinkMarket
 
-## Getting Started
+> Marketplace mua bán **backlink & content sourcing** — kết nối publisher (chủ website) với buyer (marketer/brand) cần đặt backlink, guest post.
 
-First, run the development server:
+Lấy ý tưởng chức năng từ mô hình marketplace backlink (kiểu icopify), nhưng **giao diện, thương hiệu và toàn bộ code là tự xây mới** — dark theme hiện đại, không sao chép layout/nội dung gốc.
+
+🔗 **Demo (GitHub Pages):** https://happylot.github.io/linkmarket/
+📦 **Repo:** https://github.com/happylot/linkmarket
+
+---
+
+## 🧱 Tech stack
+
+| Thành phần | Công nghệ |
+|---|---|
+| Framework | Next.js 16 (App Router) + React 19 |
+| Ngôn ngữ | TypeScript |
+| Styling | Tailwind CSS v4 |
+| State đơn hàng | React Context + `localStorage` (chưa có backend) |
+| Deploy | GitHub Pages (static export) qua GitHub Actions |
+
+---
+
+## 🚀 Chạy local
 
 ```bash
+# Cài dependencies (nếu máy mới / chưa có node_modules)
+npm install
+
+# Chạy dev server (http://localhost:3000)
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
+# Build production (static export ra thư mục ./out)
+npm run build
+
+# Lint
+npm run lint
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+> **Lưu ý khi build local:** `next.config.ts` bật `basePath = /linkmarket` khi `NODE_ENV=production`.
+> - `npm run dev` → không có basePath, chạy bình thường ở `/`.
+> - `npm run build` → output ở `/linkmarket` (đúng cho GitHub Pages). Nếu mở file `out/index.html` trực tiếp sẽ lỗi asset; muốn xem thử bản build hãy serve qua một static server giả lập đường dẫn `/linkmarket`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 📁 Cấu trúc thư mục
 
-## Learn More
+```
+src/
+├── app/
+│   ├── layout.tsx              # Layout gốc: Navbar + Footer + OrdersProvider, dark theme
+│   ├── page.tsx                # Landing page (hero, stats, featured, how-it-works, CTA)
+│   ├── globals.css             # Tailwind + biến theme (nền tối)
+│   ├── marketplace/
+│   │   ├── page.tsx            # Trang duyệt listing + bộ lọc (client component)
+│   │   └── [id]/page.tsx       # Trang chi tiết listing + form đặt hàng
+│   └── dashboard/
+│       └── page.tsx            # Bảng quản lý đơn hàng của buyer
+├── components/
+│   ├── Navbar.tsx
+│   ├── Footer.tsx
+│   ├── ListingCard.tsx         # Card hiển thị 1 website trong marketplace
+│   └── OrderForm.tsx           # Form đặt hàng (client) → lưu vào OrdersContext
+└── lib/
+    ├── types.ts                # Kiểu Listing, Order, Niche...
+    ├── data.ts                 # DỮ LIỆU MẪU (12 listing) — thay bằng API sau
+    └── orders-context.tsx      # Context lưu/đọc đơn hàng từ localStorage
 
-To learn more about Next.js, take a look at the following resources:
+.github/workflows/deploy.yml    # CI build + deploy GitHub Pages
+public/.nojekyll                # Để Pages phục vụ thư mục _next
+Ke-hoach-He-thong-Ve-tinh-800-Domain.md   # Tài liệu kế hoạch hệ thống
+docs/DEVELOPMENT.md             # Hướng dẫn phát triển chi tiết
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🧩 Các trang & luồng chính
 
-## Deploy on Vercel
+1. **Landing (`/`)** — giới thiệu, listing nổi bật, cách hoạt động, CTA.
+2. **Marketplace (`/marketplace`)** — lọc theo niche / giá / DA, sắp xếp, hiển thị grid card.
+3. **Chi tiết (`/marketplace/[id]`)** — chỉ số website (DA, traffic, spam score), điền brief → đặt hàng.
+4. **Dashboard (`/dashboard`)** — danh sách đơn đã đặt, trạng thái, tổng chi tiêu (đọc từ localStorage).
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🛠️ Hướng phát triển tiếp theo
+
+Xem chi tiết trong [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md). Tóm tắt roadmap:
+
+- [ ] **Backend & DB thật** (đơn hàng, listing, user) — Postgres + Prisma hoặc Supabase.
+- [ ] **Auth** — phân vai trò Buyer / Publisher / Admin.
+- [ ] **Trang Publisher** — đăng & quản lý website của mình.
+- [ ] **Thanh toán** — Stripe / cổng nội địa, ví & escrow.
+- [ ] **Tìm kiếm nâng cao** — full-text, phân trang, lọc nhiều niche.
+- [ ] **Thông báo & messaging** giữa buyer và publisher.
+- [ ] Khi có backend → cân nhắc đổi host sang **Vercel** (Pages chỉ chạy tĩnh).
+
+---
+
+## 🚢 Deploy
+
+Mỗi lần push lên nhánh `main`, GitHub Actions tự build static export và deploy lên Pages.
+Theo dõi tại tab **Actions**. Cấu hình nguồn Pages: **Settings → Pages → Source: GitHub Actions**.
