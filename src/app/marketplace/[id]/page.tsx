@@ -2,6 +2,12 @@ import { notFound } from "next/navigation";
 import { listings } from "@/lib/data";
 import OrderForm from "@/components/OrderForm";
 
+export const dynamicParams = false;
+
+export function generateStaticParams() {
+  return listings.map((l) => ({ id: l.id }));
+}
+
 export default async function ListingDetailPage({
   params,
 }: {
